@@ -25,16 +25,21 @@
     "@babel/preset-env": "^7.26.9",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/jsdom": "^27.0.0",
+    "@types/node": "^24.10.1",
     "http-server": "^14.1.1",
     "jsdom": "^26.0.0",
     "onchange": "^7.1.0",
     "rollup": "^4.34.8",
-    "terser": "^5.39.0"
+    "terser": "^5.39.0",
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "build": "npm test && rollup -c rollup.config.js",
     "build:tutorial": "npm run build && cp dist/CETEI.js tutorial/js/CETEI.js",
     "dev": "npm run build && http-server -p 8888 & onchange src -- npm run build",
-    "test": "node test/nodeTest.js"
+    "test": "node test/nodeTest.js",
+    "typecheck": "tsc --noEmit"
   }
 }
