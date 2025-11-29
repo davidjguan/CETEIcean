@@ -1,4 +1,4 @@
-import type { NamespaceMap } from "./types.ts";
+import type { NamespaceMap } from "./types.js";
 
 export function learnElementNames(XML_dom: Document, namespaces: NamespaceMap): Set<string> {
   const root = XML_dom.documentElement;

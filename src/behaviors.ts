@@ -1,27 +1,30 @@
+import type { BehaviorsMap, BehaviorDefinition } from "./types.js";
 
 /* 
   Add a user-defined set of behaviors to CETEIcean's processing
   workflow. Added behaviors will override predefined behaviors with the
   same name.
 */
-export function addBehaviors(bhvs) {
-  if (bhvs.namespaces) {
-    for (let prefix of Object.keys(bhvs.namespaces)) {
-      if (!this.namespaces.has(bhvs.namespaces[prefix]) && !Array.from(this.namespaces.values()).includes(prefix)) {
-        this.namespaces.set(bhvs.namespaces[prefix], prefix);
+export function addBehaviors(this: any, bhvs: BehaviorsMap) {
+  if (bhvs.namespaces) {//updating this.namespaces with any new namespace declarations
+    for (const prefix of Object.keys(bhvs.namespaces)) {//bhv.namespaces is prefix:namespaceURI
+      const namespaceURI = bhvs.namespaces[prefix];
+      if (!this.namespaces.has(namespaceURI) && !Array.from(this.namespaces.values()).includes(prefix)) {
+        this.namespaces.set(namespaceURI, prefix); //this.namespaces is namespaceURI:prefix
       }
     }
   }
-  for (let prefix of this.namespaces.values()) {
-    if (bhvs[prefix]) {
-      for (let b of Object.keys(bhvs[prefix])) {
-        this.behaviors[`${prefix}:${b}`] = bhvs[prefix][b];
-      }
+  for (const prefix of this.namespaces.values()) {//updating this.behaviors with any new behavior definitions
+    const entries = bhvs[prefix];
+    if (entries) {
+      for (const elementName of Object.keys(entries)) {
+        this.behaviors[`${prefix}:${elementName}`] = entries[elementName] as BehaviorDefinition;
+      }//this.behaviors maps qualified element names to BehaviorDefinitions
     }
   }
-  if (bhvs["functions"]) {
-    for (let fn of Object.keys(bhvs["functions"])) {
-      this.utilities[fn] = bhvs["functions"][fn].bind(this.utilities);
+  if (bhvs.functions) {
+    for (const fn of Object.keys(bhvs.functions)) {
+      this.utilities[fn] = bhvs.functions[fn].bind(this.utilities);
     }
   }
   if (bhvs["handlers"]) {
@@ -38,16 +41,17 @@ export function addBehaviors(bhvs) {
   addBehavior("tei", "add", ["`","`"]) for an already-declared namespace or
   addBehavior({"doc": "http://docbook.org/ns/docbook"}, "note", ["[","]"]) for a new one
 */
-export function addBehavior(ns, element, b) {
-  let p;
-  if (ns === Object(ns)) {
-    for (let prefix of Object.keys(ns)) {
-      if (!this.namespaces.has(ns[prefix])) {
-        this.namespaces.set(ns[prefix], prefix);
-        p = prefix;
+export function addBehavior(this: any, ns: string | Record<string, string>, element: string, b: BehaviorDefinition) {
+  let p: string | undefined;
+  if (typeof ns === "object" && ns !== null) {//ns is a namespace definition
+    for (const prefix of Object.keys(ns)) {
+      const namespaceURI = ns[prefix];
+      if (!this.namespaces.has(namespaceURI)) {
+        this.namespaces.set(namespaceURI, prefix);
       }
+      p = prefix;//this used to be inside the if block?
     }
-  } else {
+  } else {//ns is a string prefix
     p = ns;
   }
   this.behaviors[`${p}:${element}`] = b;
@@ -57,14 +61,15 @@ export function addBehavior(ns, element, b) {
   Removes a previously-defined or default behavior. Takes a namespace prefix or namespace definition
   and the element name.
 */
-export function removeBehavior(ns, element) {
-  let p;
-  if (ns === Object(ns)) {
-    for (let prefix of Object.keys(ns)) {
-      if (!this.namespaces.has(ns[prefix])) {
-        this.namespaces.set(ns[prefix], prefix);
-        p = prefix;
+export function removeBehavior(this: any, ns: string | Record<string, string>, element: string) {
+  let p: string | undefined;
+  if (typeof ns === "object" && ns !== null) {
+    for (const prefix of Object.keys(ns)) {
+      const namespaceURI = ns[prefix];
+      if (!this.namespaces.has(namespaceURI)) {
+        this.namespaces.set(namespaceURI, prefix);
       }
+      p = prefix; //this used to be inside the if block?
     }
   } else {
     p = ns;

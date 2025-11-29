@@ -18,7 +18,7 @@ export interface PrefixDef {
   replacementPattern: string;
 }
 
-// Helper methods bound onto `this.utilities` so behaviors can call them.
+// Helper methods bound onto `this.utilities` 
 export interface UtilitiesAPI {
   [name: string]: any;
   rw?(url: string): string;
