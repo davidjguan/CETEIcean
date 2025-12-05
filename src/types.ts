@@ -18,14 +18,28 @@ export interface PrefixDef {
   replacementPattern: string;
 }
 
+export type PrefixDefsStore = string[] & Record<string, PrefixDef>;
+
+// Common DOM node types used throughout the project
+export type CETEINode = Element | Document | DocumentFragment;
+
 // Helper methods bound onto `this.utilities` 
 export interface UtilitiesAPI {
   [name: string]: any;
+  first?(urls: string): string;
+  getOrdinality?(elt: Element | null, name?: string): number;
+  copyAndReset?(node: CETEINode): CETEINode;
+  hideContent?(elt: Element, rewriteIds?: boolean): void;
+  normalizeURI?(urls: string): string;
+  repeat?(str: string, times: number): string;
   rw?(url: string): string;
   resolveURI?(uri: string): string;
   getPrefixDef?(prefix: string): PrefixDef | undefined;
-  hideContent?(elt: Element, rewriteIds?: boolean): void;
-  serialize?(elt: Element | DocumentFragment, stripElt?: boolean, ws?: string | boolean): string;
+  resetAndSerialize?(el: Element, stripElt?: boolean, ws?: string | boolean): string;
+  serialize?(elt: CETEINode, stripElt?: boolean, ws?: string | boolean): string;
+  serializeHTML?(elt: CETEINode, stripElt?: boolean, ws?: string | boolean): string;
+  unEscapeEntities?(str: string): string;
+  tagName?(name: string): string;
 }
 
 // for the perElementFn parameter in getHTML5/makeHTML5/preprocess/domToHTML5
@@ -64,6 +78,9 @@ export type HandlerFunction = (this: HTMLElement) => void;
 export interface CETEIInstance {
   document: Document;
   options: CETEIOptions;
+  base?: string;
+  dom?: DocumentFragment | null;
+  prefixDefs: PrefixDefsStore;
   utilities: UtilitiesAPI;
   addBehaviors(map: BehaviorsMap): void;
   addBehavior(ns: string | Record<string, string>, element: string, behavior: BehaviorDefinition): void;
