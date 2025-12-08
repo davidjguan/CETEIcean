@@ -52,7 +52,7 @@ export function addBehavior(this: any, ns: string | Record<string, string>, elem
       p = prefix;//this used to be inside the if block?
     }
   } else {//ns is a string prefix
-    p = ns;
+    p = ns as string;
   }
   this.behaviors[`${p}:${element}`] = b;
 }
@@ -72,7 +72,7 @@ export function removeBehavior(this: any, ns: string | Record<string, string>, e
       p = prefix; //this used to be inside the if block?
     }
   } else {
-    p = ns;
+    p = ns as string;
   }
   delete this.behaviors[`${p}:${element}`];
 }
