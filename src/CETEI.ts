@@ -603,7 +603,7 @@ declare global {
 
 try {
   if (typeof window !== 'undefined') {
-    window.CETEI = CETEI;
+    (window as typeof window & { CETEI?: typeof CETEI }).CETEI = CETEI;
     window.addEventListener("beforeunload", CETEI.savePosition);
     ceteiceanLoad = new Event("ceteiceanload");
     window.addEventListener("ceteiceanload", CETEI.restorePosition);

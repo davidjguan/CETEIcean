@@ -3,7 +3,7 @@ import terser from "@rollup/plugin-terser";
 import typescript from "@rollup/plugin-typescript";
 
 export default {
-  input: "src/CETEI.js",
+  input: "src/CETEI.ts",
   output: {
     file: "dist/CETEI.js",
     format: "iife",
@@ -12,7 +12,21 @@ export default {
   },
   plugins: [
     typescript({
-      tsconfig: "./tsconfig.json"
+      include: ["src/**/*.ts"],
+      tsconfig: false,
+      compilerOptions: {
+        target: "ES2019",
+        module: "ESNext",
+        moduleResolution: "Node",
+        lib: ["DOM", "DOM.Iterable", "ES2019"],
+        allowJs: false,
+        checkJs: false,
+        strict: false,
+        skipLibCheck: true,
+        esModuleInterop: true,
+        forceConsistentCasingInFileNames: true,
+        sourceMap: false
+      }
     }),
     babel({exclude: "node_modules/**", 
       "babelHelpers": "bundled",
