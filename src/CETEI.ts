@@ -62,13 +62,14 @@ class CETEI implements CETEIInstance {
     this.removeBehavior = removeBehavior.bind(this);
 
     // Bind selected utilities
-    this.utilities = {} as UtilitiesAPI;
+    this.utilities = { dom: null } as UtilitiesAPI;
+    const utilitiesBag = this.utilities as Record<string, unknown>;
     for (const u of Object.keys(utilities) as Array<keyof typeof utilities>) {
       const utility = utilities[u];
       if (typeof utility === 'function' && ["getPrefixDef", "rw", "resolveURI"].includes(u as string)) {
-        this.utilities[u] = utility.bind(this);
+        utilitiesBag[u as string] = utility.bind(this);
       } else {
-        this.utilities[u] = utility as UtilitiesAPI[keyof UtilitiesAPI]; //utility is any value you can find in UtilitiesAPI
+        utilitiesBag[u as string] = utility;
       }
     }
 
@@ -398,14 +399,16 @@ class CETEI implements CETEIInstance {
         return this.applyDecorator(template as string[]);
       }
       const rules = template as BehaviorRule[];
-      const self = this;
+      const handleAction = (action: BehaviorDefinition, context: UtilitiesAPI, target: Element) => {
+        if (Array.isArray(action)) {
+          return this.decorator(action).call(context, target);
+        }
+        return (action as BehaviorFunction).call(context, target);
+      };
       return function(this: UtilitiesAPI, elt: Element) {
         for (const [selector, action] of rules) {
           if (elt.matches(selector) || selector === "_") {
-            if (Array.isArray(action)) {
-              return self.decorator(action).call(this, elt);
-            }
-            return (action as BehaviorFunction).call(this, elt);
+            return handleAction(action, this, elt);
           }
         }
       };
@@ -414,10 +417,11 @@ class CETEI implements CETEIInstance {
   }
 
   applyDecorator(strings: string[]): BehaviorFunction {
-    const self = this;
+    const renderTemplate = (str: string, element: Element) => this.template(str, element);
+    const insertContent = (element: Element, copy: string[]) => this.insert(element, copy);
     return function(this: UtilitiesAPI, elt: Element) {
-      const copy = strings.map((str) => self.template(str, elt));
-      return self.insert(elt, copy);
+      const copy = strings.map((str) => renderTemplate(str, elt));
+      return insertContent(elt, copy);
     };
   }
 

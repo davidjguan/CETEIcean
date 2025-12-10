@@ -1,11 +1,11 @@
-import type { BehaviorsMap, BehaviorDefinition } from "./types.js";
+import type { BehaviorsMap, BehaviorDefinition, BehaviorHost } from "./types.js";
 
 /* 
   Add a user-defined set of behaviors to CETEIcean's processing
   workflow. Added behaviors will override predefined behaviors with the
   same name.
 */
-export function addBehaviors(this: any, bhvs: BehaviorsMap) {
+export function addBehaviors(this: BehaviorHost, bhvs: BehaviorsMap) {
   if (bhvs.namespaces) {//updating this.namespaces with any new namespace declarations
     for (const prefix of Object.keys(bhvs.namespaces)) {//bhv.namespaces is prefix:namespaceURI
       const namespaceURI = bhvs.namespaces[prefix];
@@ -41,7 +41,7 @@ export function addBehaviors(this: any, bhvs: BehaviorsMap) {
   addBehavior("tei", "add", ["`","`"]) for an already-declared namespace or
   addBehavior({"doc": "http://docbook.org/ns/docbook"}, "note", ["[","]"]) for a new one
 */
-export function addBehavior(this: any, ns: string | Record<string, string>, element: string, b: BehaviorDefinition) {
+export function addBehavior(this: BehaviorHost, ns: string | Record<string, string>, element: string, b: BehaviorDefinition) {
   let p: string | undefined;
   if (typeof ns === "object" && ns !== null) {//ns is a namespace definition
     for (const prefix of Object.keys(ns)) {
@@ -61,7 +61,7 @@ export function addBehavior(this: any, ns: string | Record<string, string>, elem
   Removes a previously-defined or default behavior. Takes a namespace prefix or namespace definition
   and the element name.
 */
-export function removeBehavior(this: any, ns: string | Record<string, string>, element: string) {
+export function removeBehavior(this: BehaviorHost, ns: string | Record<string, string>, element: string) {
   let p: string | undefined;
   if (typeof ns === "object" && ns !== null) {
     for (const prefix of Object.keys(ns)) {

@@ -25,7 +25,8 @@ export type CETEINode = Element | Document | DocumentFragment;
 
 // Helper methods bound onto `this.utilities` 
 export interface UtilitiesAPI {
-  [name: string]: any;
+  dom?: Element | null;
+  noteIndex?: number;
   first?(urls: string): string;
   getOrdinality?(elt: Element | null, name?: string): number;
   copyAndReset?(node: CETEINode): CETEINode;
@@ -40,6 +41,7 @@ export interface UtilitiesAPI {
   serializeHTML?(elt: CETEINode, stripElt?: boolean, ws?: string | boolean): string;
   unEscapeEntities?(str: string): string;
   tagName?(name: string): string;
+  [name: string]: unknown;
 }
 
 // for the perElementFn parameter in getHTML5/makeHTML5/preprocess/domToHTML5
@@ -63,12 +65,19 @@ export interface BehaviorDefinitionMap {
  * BehaviorDefinitionMap entries.
  */
 type BehaviorNamespaces = Record<string, string>;
-type BehaviorFunctions = Record<string, (...args: any[]) => any>;
+export type BehaviorUtility = (this: UtilitiesAPI, ...args: unknown[]) => unknown;
+type BehaviorFunctions = Record<string, BehaviorUtility>;
 
 export interface BehaviorsMap {
   namespaces?: BehaviorNamespaces;
   functions?: BehaviorFunctions;
   [prefix: string]: BehaviorDefinitionMap | BehaviorNamespaces | BehaviorFunctions | undefined;
+}
+
+export interface BehaviorHost extends CETEIInstance {
+  namespaces: NamespaceMap;
+  behaviors: Record<string, BehaviorDefinition>;
+  utilities: UtilitiesAPI;
 }
 
 /** Function type returned by getHandler/getFallback. */

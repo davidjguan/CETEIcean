@@ -1,4 +1,4 @@
-import type { BehaviorsMap } from "./types.js";
+import type { BehaviorsMap, UtilitiesAPI } from "./types.js";
 
 const defaultBehaviors: BehaviorsMap = {
   "namespaces": {
@@ -17,7 +17,7 @@ const defaultBehaviors: BehaviorsMap = {
       ["[target]", ["<a href=\"$rw@target\">","</a>"]]
     ],
     // creates an img tag with the @url as the src attribute
-    "graphic": function(this: any, elt: Element) {
+    "graphic": function(this: UtilitiesAPI, elt: Element) {
       const doc = elt.ownerDocument;
       const content = doc.createElement("img");
       const url = elt.getAttribute("url");
@@ -38,7 +38,7 @@ const defaultBehaviors: BehaviorsMap = {
     },
     "list": [
       // will only run on a list where @type="gloss"
-      ["[type=gloss]", function(this: any, elt: Element) {
+      ["[type=gloss]", function(this: UtilitiesAPI, elt: Element) {
         const doc = elt.ownerDocument;
         const dl = doc.createElement("dl");
         for (const child of Array.from(elt.children)) {
@@ -61,25 +61,26 @@ const defaultBehaviors: BehaviorsMap = {
     ]],
     "note": [
       // Make endnotes
-      ["[place=end]", function(this: any, elt: Element){
+      ["[place=end]", function(this: UtilitiesAPI, elt: Element){
         const doc = elt.ownerDocument;
-        if (!this.noteIndex){
-          this["noteIndex"] = 1;
-        } else {
-          this.noteIndex++;
-        }
-        const id = "_note_" + this.noteIndex;
+        this.noteIndex = (this.noteIndex ?? 0) + 1;
+        const currentIndex = this.noteIndex;
+        const id = "_note_" + currentIndex;
         const link = doc.createElement("a");
         link.setAttribute("id", "src" + id);
         link.setAttribute("href", "#" + id);
-        link.innerHTML = this.noteIndex;
+        link.innerHTML = String(currentIndex);
         const content = doc.createElement("sup");
         content.appendChild(link);
         let notes = doc.querySelector("ol.notes");
         if (!notes) {
           notes = doc.createElement("ol");
           notes.setAttribute("class", "notes");
-          this.dom.appendChild(notes);
+          const host = this.dom;
+          if (!host) {
+            throw new Error("CETEI utilities DOM root is unavailable.");
+          }
+          host.appendChild(notes);
         }
         const note = doc.createElement("li");
         note.id = id;
@@ -90,12 +91,12 @@ const defaultBehaviors: BehaviorsMap = {
       ["_", ["(",")"]]
     ],
     // Hide the teiHeader by default
-    "teiHeader": function(this: any, e: Element) {
+    "teiHeader": function(this: UtilitiesAPI, e: Element) {
       this.hideContent(e, false);
     },
     // Make the title element the HTML title
     "title": [
-      ["tei-titlestmt>tei-title", function(this: any, elt: Element) {
+      ["tei-titlestmt>tei-title", function(this: UtilitiesAPI, elt: Element) {
         const doc = elt.ownerDocument;
         const title = doc.createElement("title");
         const textSource = (elt as HTMLElement).innerText ?? "";
@@ -108,7 +109,7 @@ const defaultBehaviors: BehaviorsMap = {
     ],
   },
   "teieg": {
-    "egXML": function(this: any, elt: Element) {
+    "egXML": function(this: UtilitiesAPI, elt: Element) {
       const doc = elt.ownerDocument;
       const pre = doc.createElement("pre");
       const code = doc.createElement("code");
