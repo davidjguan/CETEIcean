@@ -48,7 +48,7 @@ export interface UtilitiesAPI {
 export type PerElementCallback = (converted: Element, source: Element) => void;
 
 
-export type BehaviorFunction = (elt: Element) => Node | void;
+export type BehaviorFunction = (elt: Element) => Node | null | void;
 // A css selector-based rule
 export type BehaviorRule = [string, BehaviorDefinition];
 export type BehaviorTemplate = [string] | [string, string] | BehaviorRule[];

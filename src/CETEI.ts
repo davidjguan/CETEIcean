@@ -461,13 +461,12 @@ class CETEI implements CETEIInstance {
     return this.append(this.decorator(behavior)) as HandlerFunction;
   }
 
-  insert(elt: Element, strings: string[]): Node {
+  insert(elt: Element, strings: string[]): Node | null {
     const content = this.document.createElement("cetei-content");
-    for (const node of Array.from(elt.childNodes)) {
-      if (node.nodeType === ELEMENT_NODE && !(node as Element).hasAttribute("data-processed")) {
-        this.processElement(node as Element);
-      }
-    }
+    // The JavaScript version looped over the children here calling
+    // processElement(), but processElement() passed the wrong arguments to
+    // getFallback(), so the loop never changed anything. It is left out so the
+    // output stays identical; children are processed when they are upgraded.
     if (strings[0].match("<[^>]+>") && strings[1] && strings[1].match("<[^>]+>")) {
       content.innerHTML = strings[0] + elt.innerHTML + (strings[1] ? strings[1] : "");
     } else {
@@ -482,7 +481,9 @@ class CETEI implements CETEIInstance {
       }
     }
     if (content.childNodes.length < 2) {
-      return content.firstChild ?? content;
+      // May be null when the template and the element are both empty; append()
+      // then leaves the element alone.
+      return content.firstChild;
     }
     return content;
   }

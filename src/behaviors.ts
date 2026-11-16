@@ -49,7 +49,9 @@ export function addBehavior(this: BehaviorHost, ns: string | Record<string, stri
       if (!this.namespaces.has(namespaceURI)) {
         this.namespaces.set(namespaceURI, prefix);
       }
-      p = prefix;//this used to be inside the if block?
+      // Use the prefix even if the namespace was already registered (the
+      // JavaScript version only set it for new namespaces, leaving it undefined).
+      p = prefix;
     }
   } else {//ns is a string prefix
     p = ns as string;
@@ -69,7 +71,7 @@ export function removeBehavior(this: BehaviorHost, ns: string | Record<string, s
       if (!this.namespaces.has(namespaceURI)) {
         this.namespaces.set(namespaceURI, prefix);
       }
-      p = prefix; //this used to be inside the if block?
+      p = prefix;
     }
   } else {
     p = ns as string;

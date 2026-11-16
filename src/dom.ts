@@ -11,7 +11,7 @@ export function learnElementNames(XML_dom: Document, namespaces: NamespaceMap): 
     if (!namespaces.has(ns)) {
       namespaces.set(ns, "ns" + i++);
     }
-    const prefix = namespaces.get(ns) ?? ""; //technically don't need ?? "" 
+    const prefix = namespaces.get(ns) ?? "";
     return `${prefix}:${e.localName}`;
   };
   const els = new Set<string>(Array.from(root.querySelectorAll("*"), qname));
