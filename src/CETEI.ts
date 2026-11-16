@@ -24,6 +24,14 @@ const ELEMENT_NODE = 1;
 const PROCESSING_INSTRUCTION_NODE = 7;
 const COMMENT_NODE = 8;
 
+// Fires the "ceteiceanload" event in browsers. A no-op outside the browser
+// (e.g. Node with JSDOM), where the event is never created.
+function dispatchLoadEvent(): void {
+  if (typeof window !== 'undefined' && ceteiceanLoad) {
+    window.dispatchEvent(ceteiceanLoad);
+  }
+}
+
 class CETEI implements CETEIInstance {
   document!: Document;
   options: CETEIOptions;
@@ -78,7 +86,7 @@ class CETEI implements CETEIInstance {
     this.namespaces = new Map<string | null, string>();
     this.behaviors = {};
     this.hasStyle = false;
-    this.prefixDefs = [] as PrefixDefsStore;
+    this.prefixDefs = ([] as string[]) as PrefixDefsStore;
     this.debug = this.options.debug === true;
     this.discardContent = this.options.discardContent === true;
 
@@ -274,19 +282,19 @@ class CETEI implements CETEIInstance {
   domToHTML5(XML_dom: Document, callback?: ProcessingCallback, perElementFn?: PerElementCallback): DocumentFragment | void {
 
     this.preprocess(XML_dom, null, perElementFn);
+    const dom = this.dom;
+    if (!dom) {
+      throw new Error("CETEI: preprocessing did not produce a document fragment.");
+    }
 
     this.applyBehaviors();
     this.done = true;
     if (callback) {
-      callback(this.dom, this);
-      if (window) {
-        window.dispatchEvent(ceteiceanLoad);
-      }
+      callback(dom, this);
+      dispatchLoadEvent();
     } else {
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(ceteiceanLoad);
-      }
-      return this.dom;
+      dispatchLoadEvent();
+      return dom;
     }
   }
 
@@ -299,9 +307,7 @@ class CETEI implements CETEIInstance {
   processPage(): void {
     this.els = learnCustomElementNames(this.document);
     this.applyBehaviors();
-    if (window) {
-      window.dispatchEvent(ceteiceanLoad);
-    }
+    dispatchLoadEvent();
   }
 
   /* 
@@ -509,11 +515,11 @@ class CETEI implements CETEIInstance {
             if (typeof utilFn === 'function') {
               const value = elt.getAttribute(replacements[2]);
               const replacement = utilFn.call(this.utilities, value);
-              result = result.replace(replacements[0], replacement);
+              result = result.replace(replacements[0], String(replacement ?? ""));
               continue;
             }
           }
-          result = result.replace(replacements[0], elt.getAttribute(replacements[2]));
+          result = result.replace(replacements[0], elt.getAttribute(replacements[2]) ?? "");
         } else {
           result = result.replace(replacements[0], "");
         }

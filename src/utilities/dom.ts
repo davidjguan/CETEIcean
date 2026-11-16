@@ -121,8 +121,9 @@ export function hideContent(elt: Element, rewriteIds = true): void {
     }
     if (rewriteIds) {
       for (const e of Array.from(hidden.querySelectorAll("*"))) {
-        if (e.hasAttribute("id")) {
-          e.setAttribute("data-origid", e.getAttribute("id"));
+        const id = e.getAttribute("id");
+        if (id !== null) {
+          e.setAttribute("data-origid", id);
           e.removeAttribute("id");
         }
       }

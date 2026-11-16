@@ -21,7 +21,7 @@ export default {
         lib: ["DOM", "DOM.Iterable", "ES2019"],
         allowJs: false,
         checkJs: false,
-        strict: false,
+        strict: true,
         skipLibCheck: true,
         esModuleInterop: true,
         forceConsistentCasingInFileNames: true,

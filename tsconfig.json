@@ -6,7 +6,7 @@
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
     "allowJs": true,
     "checkJs": false,
-    "strict": false,
+    "strict": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "declaration": true,

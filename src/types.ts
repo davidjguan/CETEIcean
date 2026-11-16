@@ -27,20 +27,20 @@ export type CETEINode = Element | Document | DocumentFragment;
 export interface UtilitiesAPI {
   dom?: Element | null;
   noteIndex?: number;
-  first?(urls: string): string;
-  getOrdinality?(elt: Element | null, name?: string): number;
-  copyAndReset?(node: CETEINode): CETEINode;
-  hideContent?(elt: Element, rewriteIds?: boolean): void;
-  normalizeURI?(urls: string): string;
-  repeat?(str: string, times: number): string;
-  rw?(url: string): string;
-  resolveURI?(uri: string): string;
-  getPrefixDef?(prefix: string): PrefixDef | undefined;
-  resetAndSerialize?(el: Element, stripElt?: boolean, ws?: string | boolean): string;
-  serialize?(elt: CETEINode, stripElt?: boolean, ws?: string | boolean): string;
-  serializeHTML?(elt: CETEINode, stripElt?: boolean, ws?: string | boolean): string;
-  unEscapeEntities?(str: string): string;
-  tagName?(name: string): string;
+  first(urls: string): string;
+  getOrdinality(elt: Element | null, name?: string): number;
+  copyAndReset(node: CETEINode): CETEINode;
+  hideContent(elt: Element, rewriteIds?: boolean): void;
+  normalizeURI(urls: string): string;
+  repeat(str: string, times: number): string;
+  rw(url: string): string;
+  resolveURI(uri: string): string;
+  getPrefixDef(prefix: string): PrefixDef | undefined;
+  resetAndSerialize(el: Element, stripElt?: boolean, ws?: string | boolean): string;
+  serialize(elt: CETEINode, stripElt?: boolean, ws?: string | boolean): string;
+  serializeHTML(elt: CETEINode, stripElt?: boolean, ws?: string | boolean): string;
+  unEscapeEntities(str: string): string;
+  tagName(name: string): string;
   [name: string]: unknown;
 }
 
